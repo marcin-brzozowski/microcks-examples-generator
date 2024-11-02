@@ -1,2 +1,2 @@
-# microcks-examples-generator
-This repository contains a CLI application for generating Microcks examples documents from OpenAPI spec
+# OpenAPI-MEGA
+The purpose of the OpenAPI Mega Examples Generator App (OpenAPI-MEGA) is to facilitate generating examples of the resource defined by OpenAPI documents.
