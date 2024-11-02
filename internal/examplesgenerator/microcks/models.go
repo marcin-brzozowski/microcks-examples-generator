@@ -1,11 +1,8 @@
 package microcks
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
-
-	"gopkg.in/yaml.v2"
 )
 
 type APIExamples struct {
@@ -46,22 +43,4 @@ type Response struct {
 	MediaType string                 `json:"mediaType,omitempty" yaml:"mediaType,omitempty"`
 	Code      string                 `json:"code,omitempty" yaml:"code,omitempty"`
 	Body      interface{}            `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// ToJSON converts the APIExamples struct to JSON format.
-func (a *APIExamples) ToJSON() (string, error) {
-	data, err := json.MarshalIndent(a, "", "  ")
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
-}
-
-// ToYAML converts the APIExamples struct to YAML format.
-func (a *APIExamples) ToYAML() (string, error) {
-	data, err := yaml.Marshal(a)
-	if err != nil {
-		return "", err
-	}
-	return string(data), nil
 }

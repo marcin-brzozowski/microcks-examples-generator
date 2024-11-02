@@ -1,12 +1,11 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
 # Binaries for programs and plugins
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+*.zip
+.DS_Store
 
 # Test binary, built with `go test -c`
 *.test
@@ -15,11 +14,22 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+# binaries
+dist/
 
-# Go workspace file
-go.work
-go.work.sum
+# ignore changes to launch.json
+.vscode/launch.json
 
-# env file
-.env
+#json files
+*.json
+
+!samples/*/*.zip
+!samples/*.json
+!samples/*/*.json
+!test/*.json
+!test/*.yaml
+!test/*.zip
+!cmd/megcli*
+!.vscode/launch.json
+!.devcontainer/devcontainer.json

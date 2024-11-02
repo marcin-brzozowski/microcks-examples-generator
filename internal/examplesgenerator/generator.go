@@ -1,24 +1,19 @@
-package main
+package examplesgenerator
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
+	"examplesgenerator/microcks"
 	"fmt"
-	"html/template"
-	"log"
 	"os"
-	"strings"
 
 	"github.com/pb33f/libopenapi"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
 	"github.com/pb33f/libopenapi/orderedmap"
 	"github.com/pb33f/libopenapi/renderer"
-	"libopenapi-poc.com/m/microcks"
 )
 
 // Function to load OpenAPI file, generate examples, and construct APIExamples struct
-func generateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.APIExamples, error) {
+func GenerateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.APIExamples, error) {
 	// Load the OpenAPI spec file
 	specData, err := os.ReadFile(openAPIPath)
 	if err != nil {
@@ -68,7 +63,7 @@ func generateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.API
 			verb, operation := op.Key(), op.Value()
 
 			// Generate request example
-			reqMock, reqErr := GenerateMockRequest(ctx, operation, mockGen)
+			reqMock, reqErr := generateMockRequest(ctx, operation, mockGen)
 			if reqErr == nil {
 				exampleItem.Request = reqMock
 			}
@@ -76,7 +71,7 @@ func generateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.API
 			// Generate response examples
 			for r := range orderedmap.Iterate(ctx, operation.Responses.Codes) {
 				status, response := r.Key(), r.Value()
-				resMock, resErr := GenerateMockResponse(ctx, response, mockGen, status)
+				resMock, resErr := generateMockResponse(ctx, response, mockGen, status)
 				if resErr == nil {
 					exampleItem.Response = resMock
 				}
@@ -89,7 +84,7 @@ func generateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.API
 }
 
 // GenerateMockRequest generates a mock request example using the operation parameters and request body schema.
-func GenerateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *renderer.MockGenerator) (microcks.Request, error) {
+func generateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *renderer.MockGenerator) (microcks.Request, error) {
 	mockRequest := microcks.Request{
 		Parameters: make(map[string]interface{}),
 		Headers:    make(map[string]interface{}),
@@ -134,7 +129,7 @@ func GenerateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *
 }
 
 // GenerateMockResponse generates a mock response example for a given response schema and status code.
-func GenerateMockResponse(ctx context.Context, response *v3.Response, mockGen *renderer.MockGenerator, statusCode string) (microcks.Response, error) {
+func generateMockResponse(ctx context.Context, response *v3.Response, mockGen *renderer.MockGenerator, statusCode string) (microcks.Response, error) {
 	mockResponse := microcks.Response{
 		Headers: make(map[string]interface{}),
 		Code:    statusCode,
@@ -179,133 +174,4 @@ func GenerateMockResponse(ctx context.Context, response *v3.Response, mockGen *r
 	}
 
 	return mockResponse, nil
-}
-
-func main() {
-	openAPIPath := "assets/specs/petstore.yaml"
-	ctx := context.TODO()
-
-	apiExamples, err := generateAPIExamples(ctx, openAPIPath)
-	if err != nil {
-		log.Fatalf("Error generating API examples: %v", err)
-	}
-
-	// Define the template
-	// TODO - currently only a single example is generated, and the "Example" property is hardcoded
-	// Implement generating multiple examples, one for each status code returned by the endpoint
-	tmpl := `
-apiVersion: {{ .APIVersion }}
-kind: {{ .Kind }}
-metadata:
-  name: {{ .Metadata.Name }}
-  version: {{ .Metadata.Version }}
-operations:
-{{- range $key, $value := .Operations }}
-  '{{$key}}':
-    Example:
-      request:
-        {{- if $value.Request.Parameters }}
-        parameters:
-          {{- range $paramKey, $paramValue := $value.Request.Parameters }}
-          {{$paramKey}}: {{$paramValue}}
-          {{- end }}
-        {{- end }}
-        {{- if $value.Request.Headers }}
-        headers:
-          {{- range $headerKey, $headerValue := $value.Request.Headers }}
-          {{$headerKey}}: {{$headerValue}}
-          {{- end }}
-        {{- end }}
-        {{- if $value.Request.Body }}
-        body: |-
-{{ SafeJSON $value.Request.Body | indent 10 }}
-        {{- end }}
-      response:
-        {{- if $value.Response.Headers }}
-        headers:
-          {{- range $headerKey, $headerValue := $value.Response.Headers }}
-          {{$headerKey}}: {{$headerValue}}
-          {{- end }}
-        {{- end }}
-        {{- if $value.Response.MediaType }}
-        mediaType: {{$value.Response.MediaType}}
-        {{- end }}
-        code: {{$value.Response.Code}}
-        {{- if $value.Response.Body }}
-        body: |-
-{{ SafeJSON $value.Response.Body | indent 10 }}
-        {{- end }}
-{{- end }}
-`
-	// Create a new template and parse the letter into it
-	t := template.Must(template.New("apiExamples").Funcs(template.FuncMap{
-		"PrettyJSON": PrettyJSON,
-		"SafeJSON":   SafeJSON,
-		"indent":     indent,
-	}).Parse(tmpl))
-
-	// Create a buffer to hold the output
-	var output bytes.Buffer
-
-	// Execute the template with the apiExamples data
-	if err := t.Execute(&output, apiExamples); err != nil {
-		panic(err)
-	}
-
-	// Output the generated YAML
-	fmt.Println(output.String())
-
-	// // Convert to YAML and print result
-	// yamlData, err := yaml.Marshal(apiExamples)
-	// if err != nil {
-	// 	log.Fatalf("Error marshalling API examples to YAML: %v", err)
-	// }
-	// fmt.Println(string(yamlData))
-}
-func indent(amount int, html template.HTML) template.HTML {
-	// Convert template.HTML back to string for processing
-	str := string(html)
-
-	pad := strings.Repeat(" ", amount)
-	// Indent each line by adding the padding
-	indentedStr := pad + strings.ReplaceAll(str, "\n", "\n"+pad)
-
-	// Return the indented string as template.HTML
-	return template.HTML(indentedStr)
-}
-
-func SafeJSON(input string) (template.HTML, error) {
-	return template.HTML(input), nil
-}
-
-// This is bullshit, I tried to pretty-print JSON
-// It turned out it's as simple as wrapping json in template.HTML to avoid escaping characters
-// and then go template will render it as raw string, then we just need the indent function
-// to work with the template.HTML input and return it also as the output and we're golden
-func PrettyJSON(input interface{}) (template.HTML, error) {
-	var formattedJSON bytes.Buffer
-
-	inputStr, ok := input.(string)
-	if !ok {
-		return "", fmt.Errorf("value is not a string")
-	}
-
-	// Declare an interface{} to hold the unmarshalled data
-	var result interface{}
-
-	// Unmarshal the JSON string into the interface{}
-	err := json.Unmarshal([]byte(inputStr), &result)
-	if err != nil {
-		fmt.Println("Error unmarshalling JSON:", err)
-		return "", fmt.Errorf("value is not a valid JSON string")
-	}
-
-	encoder := json.NewEncoder(&formattedJSON)
-	encoder.SetIndent("", "  ")
-	encoder.SetEscapeHTML(false)
-
-	if err := encoder.Encode(result); err != nil {
-		return "", err
-	}
-	return template.HTML(formattedJSON.String()), nil // Mark as HTML safe
 }
