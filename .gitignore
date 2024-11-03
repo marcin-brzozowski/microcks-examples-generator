@@ -17,6 +17,7 @@
 vendor/
 # binaries
 dist/
+bin/
 
 # ignore changes to launch.json
 .vscode/launch.json
