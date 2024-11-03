@@ -39,21 +39,11 @@ var (
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	RootCmd.PersistentFlags().BoolVarP(&printOutput, "print-output", "",
-		true, "Control printing of info log statements")
-
-	RootCmd.PersistentFlags().BoolVarP(&noOutput, "no-output", "",
-		false, "Disable printing all statements to stdout")
-
-	RootCmd.AddCommand(cmd.ApiExamplesCmd)
+	RootCmd.AddCommand(cmd.GenerateCmd)
+	RootCmd.PersistentFlags().BoolVarP(&printOutput, "print-output", "", true, "Control printing of info log statements")
+	RootCmd.PersistentFlags().BoolVarP(&noOutput, "no-output", "", false, "Disable printing all statements to stdout")
 }
 
 func initConfig() {
 
-}
-
-// GetRootCmd returns the root of the cobra command-tree.
-func GetRootCmd() *cobra.Command {
-	return RootCmd
 }
