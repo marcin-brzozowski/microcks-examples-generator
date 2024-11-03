@@ -1,2 +1,5 @@
-# OpenAPI-MEGA
-The purpose of the OpenAPI Mega Examples Generator App (OpenAPI-MEGA) is to facilitate generating examples of the resource defined by OpenAPI documents.
+# OpenAPI Examples
+
+## OpenAPI Examples generation tool
+
+The purpose of the OpenAPI Examples is to facilitate generating examples of the resources defined in OpenAPI documents.
