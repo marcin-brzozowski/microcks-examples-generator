@@ -30,6 +30,6 @@ dist/
 !test/*.json
 !test/*.yaml
 !test/*.zip
-!cmd/megcli*
+!cmd/openapiexamplescli*
 !.vscode/launch.json
 !.devcontainer/devcontainer.json

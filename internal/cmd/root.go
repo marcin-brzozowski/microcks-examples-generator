@@ -20,11 +20,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// RootCmd to manage megcli
+// RootCmd to manage openapi-examples
 var RootCmd = &cobra.Command{
-	Use:   "megcli",
-	Short: "Utility to generate Microcks APIExamples files.",
-	Long:  "This command lets you generate APIExamples fiels from your OpenAPI specs.",
+	Use:   "openapi-examples",
+	Short: "openapi-examples can be used to generate examples for API requests, responses or models.",
+	Long: `openapi-examples can be used to generate examples for API requests, responses or models 
+from schema defined in OpenAPI specification document.`,
 }
 
 func Execute() {
