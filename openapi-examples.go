@@ -29,7 +29,7 @@ var (
 )
 
 func main() {
-	rootCmd := cmd.GetRootCmd()
+	rootCmd := cmd.RootCmd
 	rootCmd.Version = fmt.Sprintf("%s date: %s [commit: %.7s]", version, date, commit)
 
 	if err := rootCmd.Execute(); err != nil {

@@ -3,7 +3,6 @@ package microcks
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/pb33f/libopenapi"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
@@ -12,15 +11,9 @@ import (
 )
 
 // Function to load OpenAPI file, generate examples, and construct APIExamples struct
-func GenerateAPIExamples(ctx context.Context, openAPIPath string) (*APIExamples, error) {
-	// Load the OpenAPI spec file
-	specData, err := os.ReadFile(openAPIPath)
-	if err != nil {
-		return nil, fmt.Errorf("error reading OpenAPI file: %w", err)
-	}
-
+func GenerateAPIExamples(ctx context.Context, spec []byte) (*APIExamples, error) {
 	// Parse OpenAPI 3 document
-	doc, docErr := libopenapi.NewDocument(specData)
+	doc, docErr := libopenapi.NewDocument(spec)
 	if docErr != nil {
 		return nil, fmt.Errorf("error parsing OpenAPI file: %w", docErr)
 	}
