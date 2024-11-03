@@ -1,4 +1,4 @@
-module github.com/marcin-brzozowski/microcks-examples-generator
+module github.com/marcin-brzozowski/openapi-examples
 
 go 1.23.2
 

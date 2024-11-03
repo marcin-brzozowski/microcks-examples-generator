@@ -2,4 +2,4 @@
 
 ## OpenAPI Examples generation tool
 
-The purpose of the OpenAPI Examples is to facilitate generating examples of the resources defined in OpenAPI documents.
+openapi-examples can be used to generate examples for API requests, responses or models from schema defined in OpenAPI specification document.
