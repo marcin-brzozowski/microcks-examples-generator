@@ -4,7 +4,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Cmd to api observability
 var GenerateCmd = &cobra.Command{
 	Use:     "generate",
 	Aliases: []string{"g", "gen"},
