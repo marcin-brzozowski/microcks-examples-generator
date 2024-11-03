@@ -1,14 +1,12 @@
-package examples
+package cmd
 
 import (
 	"bytes"
-	"examplesgenerator/microcks"
 	"fmt"
 	"os"
 
+	"github.com/marcin-brzozowski/openapi-examples/microcks"
 	"github.com/spf13/cobra"
-
-	"examplesgenerator"
 )
 
 // GenerateCmd
@@ -21,7 +19,7 @@ var GenerateCmd = &cobra.Command{
 			return fmt.Errorf("OpenAPI file does not exist: %v", err)
 		}
 
-		apiExamples, err := examplesgenerator.GenerateAPIExamples(cmd.Context(), openApiFilePath)
+		apiExamples, err := microcks.GenerateAPIExamples(cmd.Context(), openApiFilePath)
 		if err != nil {
 			return fmt.Errorf("error generating API examples: %v", err)
 		}

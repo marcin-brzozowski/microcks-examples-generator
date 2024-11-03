@@ -4,7 +4,7 @@ import (
 	"io"
 	"text/template"
 
-	"internal/cmd/utils"
+	"github.com/marcin-brzozowski/openapi-examples/utils"
 )
 
 // Define the template

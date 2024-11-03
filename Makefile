@@ -1,5 +1,5 @@
 build:
-	@go build -o bin/openapi-examples cmd/openapiexamplescli/openapiexamples.go
+	@go build -o bin/openapi-examples
 
 run:
-	@go run cmd/openapiexamplescli/openapiexamples.go
+	@go run openapi-examples.go

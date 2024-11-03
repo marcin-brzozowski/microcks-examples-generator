@@ -15,8 +15,7 @@
 package cmd
 
 import (
-	"cmd/examples"
-
+	cmd "github.com/marcin-brzozowski/openapi-examples/cmd/generate"
 	"github.com/spf13/cobra"
 )
 
@@ -47,7 +46,7 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&noOutput, "no-output", "",
 		false, "Disable printing all statements to stdout")
 
-	RootCmd.AddCommand(examples.Cmd)
+	RootCmd.AddCommand(cmd.ApiExamplesCmd)
 }
 
 func initConfig() {

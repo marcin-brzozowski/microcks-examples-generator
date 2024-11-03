@@ -1,7 +1,0 @@
-go 1.23.2
-
-use (
-    .
-    ./internal/cmd
-    ./internal/examplesgenerator
-)

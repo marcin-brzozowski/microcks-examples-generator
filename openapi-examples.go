@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"internal/cmd"
+	"github.com/marcin-brzozowski/openapi-examples/cmd"
 )
 
 // https://goreleaser.com/cookbooks/using-main.version/?h=ldflags

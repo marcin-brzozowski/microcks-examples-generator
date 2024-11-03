@@ -1,8 +1,7 @@
-package examplesgenerator
+package microcks
 
 import (
 	"context"
-	"examplesgenerator/microcks"
 	"fmt"
 	"os"
 
@@ -13,7 +12,7 @@ import (
 )
 
 // Function to load OpenAPI file, generate examples, and construct APIExamples struct
-func GenerateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.APIExamples, error) {
+func GenerateAPIExamples(ctx context.Context, openAPIPath string) (*APIExamples, error) {
 	// Load the OpenAPI spec file
 	specData, err := os.ReadFile(openAPIPath)
 	if err != nil {
@@ -43,21 +42,21 @@ func GenerateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.API
 	mockGen.SetPretty()
 
 	// Construct the APIExamples struct
-	apiExamples := &microcks.APIExamples{
+	apiExamples := &APIExamples{
 		APIVersion: "mocks.microcks.io/v1alpha1",
 		Kind:       "APIExamples",
-		Metadata: microcks.Metadata{
+		Metadata: Metadata{
 			Name:    docModel.Model.Info.Title,
 			Version: docModel.Model.Info.Version,
 		},
-		Operations: make(map[microcks.OperationName]microcks.ExampleItem),
+		Operations: make(map[OperationName]ExampleItem),
 	}
 
 	// Iterate through paths and operations to generate examples
 	for p := range orderedmap.Iterate(ctx, docModel.Model.Paths.PathItems) {
 		path, pathItem := p.Key(), p.Value()
 
-		exampleItem := microcks.ExampleItem{}
+		exampleItem := ExampleItem{}
 
 		for op := range orderedmap.Iterate(ctx, pathItem.GetOperations()) {
 			verb, operation := op.Key(), op.Value()
@@ -77,15 +76,15 @@ func GenerateAPIExamples(ctx context.Context, openAPIPath string) (*microcks.API
 				}
 			}
 
-			apiExamples.Operations[microcks.OperationName{Verb: verb, Path: path}] = exampleItem
+			apiExamples.Operations[OperationName{Verb: verb, Path: path}] = exampleItem
 		}
 	}
 	return apiExamples, nil
 }
 
 // GenerateMockRequest generates a mock request example using the operation parameters and request body schema.
-func generateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *renderer.MockGenerator) (microcks.Request, error) {
-	mockRequest := microcks.Request{
+func generateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *renderer.MockGenerator) (Request, error) {
+	mockRequest := Request{
 		Parameters: make(map[string]interface{}),
 		Headers:    make(map[string]interface{}),
 	}
@@ -95,7 +94,7 @@ func generateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *
 		if param.Schema != nil {
 			schema, err := param.Schema.BuildSchema()
 			if err != nil {
-				return microcks.Request{}, err
+				return Request{}, err
 			}
 			paramExample, err := mockGen.GenerateMock(schema, "")
 			if err != nil {
@@ -112,7 +111,7 @@ func generateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *
 			if mediaTypeValue.Schema != nil {
 				schema, err := mediaTypeValue.Schema.BuildSchema()
 				if err != nil {
-					return microcks.Request{}, err
+					return Request{}, err
 				}
 				bodyExample, err := mockGen.GenerateMock(schema, "")
 				if err != nil {
@@ -129,8 +128,8 @@ func generateMockRequest(ctx context.Context, operation *v3.Operation, mockGen *
 }
 
 // GenerateMockResponse generates a mock response example for a given response schema and status code.
-func generateMockResponse(ctx context.Context, response *v3.Response, mockGen *renderer.MockGenerator, statusCode string) (microcks.Response, error) {
-	mockResponse := microcks.Response{
+func generateMockResponse(ctx context.Context, response *v3.Response, mockGen *renderer.MockGenerator, statusCode string) (Response, error) {
+	mockResponse := Response{
 		Headers: make(map[string]interface{}),
 		Code:    statusCode,
 	}
@@ -143,7 +142,7 @@ func generateMockResponse(ctx context.Context, response *v3.Response, mockGen *r
 		if headerValue.Schema != nil {
 			schema, err := headerValue.Schema.BuildSchema()
 			if err != nil {
-				return microcks.Response{}, err
+				return Response{}, err
 			}
 			headerExample, err := mockGen.GenerateMock(schema, "")
 			if err != nil {
@@ -161,7 +160,7 @@ func generateMockResponse(ctx context.Context, response *v3.Response, mockGen *r
 		if mediaTypeValue.Schema != nil {
 			schema, err := mediaTypeValue.Schema.BuildSchema()
 			if err != nil {
-				return microcks.Response{}, err
+				return Response{}, err
 			}
 			bodyExample, err := mockGen.GenerateMock(schema, "")
 			if err != nil {
